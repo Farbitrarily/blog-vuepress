@@ -32,9 +32,12 @@ jobs:
           git status
           git add .github/workflows/merge.yml
           git commit -m "Resolve merge conflicts"
-          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push if no conflicts
         if: steps.merge.outcome == 'success'
         run: |
           git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
