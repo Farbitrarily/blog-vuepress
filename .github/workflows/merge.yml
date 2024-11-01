@@ -18,9 +18,29 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Merge dev into main
+      - name: Attempt to merge dev into main
+        id: merge
         run: |
           git fetch
           git checkout main
-          git merge dev
+          git merge dev --allow-unrelated-histories
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for merge conflicts and resolve
+        if: failure()
+        run: |
+          echo "Merge conflict detected. Resolving conflicts..."
+          git checkout --theirs .
+          git add .
+          git commit -m "Automatically resolved merge conflict by using dev branch changes"
           git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push if no conflicts
+        if: success()
+        run: |
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
