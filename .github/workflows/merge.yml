@@ -39,7 +39,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push if no conflicts
-        
+        if: success()
         run: |
           git push origin main
         env:
